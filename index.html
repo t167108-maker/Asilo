@@ -1,0 +1,613 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#176b58">
+    <title>Asilo João Kuhl Filho | Sistema de Gestão</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+<!-- AUTENTICAÇÃO: o sistema permanece bloqueado até um login válido. -->
+<section class="auth-screen" id="authScreen" aria-label="Autenticação">
+    <div class="auth-card">
+        <div class="auth-brand"><span>🏡</span><div><h1>Asilo João Kuhl Filho</h1><p>Sistema de Gestão Institucional</p></div></div>
+        <div class="auth-tabs">
+            <button type="button" class="auth-tab active" data-auth-tab="login">Login</button>
+            <button type="button" class="auth-tab" data-auth-tab="signup">Sign in</button>
+        </div>
+        <form id="loginForm" class="auth-form">
+            <h2>Entrar</h2><p>Acesse sua conta de usuário.</p>
+            <label for="loginEmail">E-mail</label><input id="loginEmail" type="email" autocomplete="username" required maxlength="150">
+            <label for="loginPassword">Senha</label><div class="password-field"><input id="loginPassword" type="password" autocomplete="current-password" required><button class="password-toggle" type="button" data-toggle-password="loginPassword" aria-label="Mostrar senha" aria-pressed="false" title="Mostrar senha">👁</button></div>
+            <button class="btn btn-primary auth-submit" type="submit">Entrar</button>
+        </form>
+        <form id="signupForm" class="auth-form" hidden>
+            <h2>Criar novo login</h2><p>Preencha todos os campos para registrar sua conta.</p>
+            <label for="signupEmail">E-mail</label><input id="signupEmail" type="email" autocomplete="email" required maxlength="150">
+            <label for="signupPassword">Senha</label><div class="password-field"><input id="signupPassword" type="password" autocomplete="new-password" required minlength="6"><button class="password-toggle" type="button" data-toggle-password="signupPassword" aria-label="Mostrar senha" aria-pressed="false" title="Mostrar senha">👁</button></div>
+            <label for="signupConfirm">Confirmar senha</label><div class="password-field"><input id="signupConfirm" type="password" autocomplete="new-password" required minlength="6"><button class="password-toggle" type="button" data-toggle-password="signupConfirm" aria-label="Mostrar senha" aria-pressed="false" title="Mostrar senha">👁</button></div>
+            <label for="signupName">Nome completo</label><input id="signupName" type="text" autocomplete="name" required maxlength="100">
+            <label for="signupPhone">Telefone</label><input id="signupPhone" type="tel" autocomplete="tel" required maxlength="25">
+            <button class="btn btn-primary auth-submit" type="submit">Criar login</button>
+        </form>
+        <p class="auth-message" id="authMessage" role="alert" aria-live="polite"></p>
+        <p class="auth-footnote">Acesso demonstrativo: contas cadastradas ficam salvas neste dispositivo.</p>
+    </div>
+</section>
+<div class="layout">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <div class="brand-icon">🏡</div>
+            <div>
+                <h1>Asilo João Kuhl Filho</h1>
+                <p>Sistema de gestão institucional</p>
+            </div>
+        </div>
+
+        <div class="menu-label">MENU PRINCIPAL</div>
+
+        <nav class="nav-menu" aria-label="Navegação principal">
+            <button class="nav-item active" data-page="inicio">
+                <span class="nav-icon">▦</span> Página inicial
+            </button>
+            <button class="nav-item" data-page="residentes" id="residentsNav">
+                <span class="nav-icon">♙</span> <span id="residentsNavLabel">Registro de residentes</span>
+            </button>
+            <button class="nav-item" data-page="agenda" data-admin-only>
+                <span class="nav-icon">▦</span> Agenda
+            </button>
+            <button class="nav-item" data-page="agendamento" data-user-only>
+                <span class="nav-icon">▣</span> Agendamento
+            </button>
+            <button class="nav-item" data-page="notificacoes">
+                <span class="nav-icon">♧</span> Notificações
+                <span class="nav-count" id="notificationCount">3</span>
+            </button>
+            <button class="nav-item" data-page="comunicados">
+                <span class="nav-icon">▤</span> Comunicados
+            </button>
+            <button class="nav-item" data-page="contas" data-admin-only><span class="nav-icon">♙</span> Contas cadastradas</button>
+        </nav>
+
+        <div class="menu-label">CONTA</div>
+
+        <nav class="nav-menu">
+            <button class="nav-item" data-page="perfil">
+                <span class="nav-icon">⚙</span> Meu perfil
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <strong>Asilo João Kuhl Filho</strong>
+            <p>Área administrativa</p>
+            <small>Protótipo demonstrativo</small>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="icon-button mobile-menu" id="menuToggle"
+                        aria-label="Abrir menu">☰</button>
+                <div class="breadcrumb">
+                    Sistema institucional
+                    <strong id="pageTitle">Página inicial</strong>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <button class="icon-button" id="headerNotifications"
+                        aria-label="Ver notificações">
+                    ♧<span class="dot" id="headerDot"></span>
+                </button>
+
+                <button class="btn btn-secondary logout-button" id="logoutButton" type="button">Sair</button>
+                <div class="user-mini" id="headerProfile" role="button"
+                     tabindex="0" aria-label="Abrir meu perfil">
+                    <div class="avatar" id="headerAvatar">AD</div>
+                    <div class="user-text">
+                        <strong id="headerName">Administrador</strong>
+                        <small id="headerRole">Administrador</small>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+
+            <!-- PÁGINA INICIAL -->
+            <section class="page active" id="page-inicio">
+                <div class="welcome">
+                    <div>
+                        <h2 id="welcomeTitle">Bem-vindo(a) ao sistema!</h2>
+                        <p>
+                            Gerencie as informações institucionais, acompanhe
+                            a agenda e mantenha a equipe informada em um só lugar.
+                        </p>
+                        <div class="date-label" id="currentDate"></div>
+                    </div>
+                    <div class="welcome-art">🏡</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <span>Residentes cadastrados</span>
+                            <span class="stat-icon">♙</span>
+                        </div>
+                        <h3 id="residentTotal">0</h3>
+                        <p>Registros demonstrativos</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <span>Eventos na agenda</span>
+                            <span class="stat-icon">▦</span>
+                        </div>
+                        <h3 id="eventTotal">0</h3>
+                        <p>Compromissos cadastrados</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <span>Notificações não lidas</span>
+                            <span class="stat-icon">♧</span>
+                        </div>
+                        <h3 id="unreadTotal">0</h3>
+                        <p>Avisos pendentes de leitura</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <span>Comunicados publicados</span>
+                            <span class="stat-icon">▤</span>
+                        </div>
+                        <h3 id="bulletinTotal">0</h3>
+                        <p>Informações da instituição</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="section-header">
+                            <div>
+                                <div class="card-title">Atividades recentes</div>
+                                <div class="card-subtitle">
+                                    Acompanhe os últimos avisos do sistema
+                                </div>
+                            </div>
+                            <button class="text-link" data-go="notificacoes">
+                                Ver todas
+                            </button>
+                        </div>
+                        <div class="activity-list" id="recentActivities"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="section-header">
+                            <div>
+                                <div class="card-title">Acesso rápido</div>
+                                <div class="card-subtitle">
+                                    Acesse as principais funcionalidades
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="quick-links">
+                            <button class="quick-link" data-go="residentes">
+                                <span>♙</span>
+                                <strong>Residentes</strong>
+                                <p>Consultar registros</p>
+                            </button>
+                            <button class="quick-link" data-go="agenda">
+                                <span>▦</span>
+                                <strong>Agenda</strong>
+                                <p>Ver compromissos</p>
+                            </button>
+                            <button class="quick-link" data-go="notificacoes">
+                                <span>♧</span>
+                                <strong>Notificações</strong>
+                                <p>Acompanhar avisos</p>
+                            </button>
+                            <button class="quick-link" data-go="comunicados">
+                                <span>▤</span>
+                                <strong>Comunicados</strong>
+                                <p>Ler publicações</p>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RESIDENTES -->
+            <section class="page" id="page-residentes">
+                <div id="adminResidentsView">
+                <div class="page-heading">
+                    <div>
+                        <h2>Registro de residentes</h2>
+                        <p>Consulte e organize os registros dos residentes.</p>
+                    </div>
+                    <button class="btn btn-primary" id="newResident" data-admin-only>
+                        ＋ Novo residente
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="toolbar">
+                        <div class="search-box">
+                            <span>⌕</span>
+                            <input id="residentSearch" type="search"
+                                   placeholder="Buscar por nome ou código...">
+                        </div>
+                        <select id="residentFilter" class="filter-select">
+                            <option value="">Todos os status</option>
+                            <option value="Ativo">Ativo</option>
+                            <option value="Em acompanhamento">Em acompanhamento</option>
+                        </select>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Residente</th>
+                                    <th>Código</th>
+                                    <th>Data de entrada</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="residentTable"></tbody>
+                        </table>
+                    </div>
+
+                    <div id="residentEmpty" class="empty-state" hidden>
+                        Nenhum residente encontrado.
+                    </div>
+                    <p class="form-hint">
+                        Os registros exibidos inicialmente são fictícios.
+                    </p>
+                </div>
+                <div id="residentActivitiesPanel" hidden></div>
+                </div>
+                <div id="userResidentLookup" hidden>
+                  <div class="page-heading"><div><h2>Consultar residente</h2><p>Informe o código exato do registro para consultar o perfil.</p></div></div>
+                  <div class="card"><form id="residentLookupForm"><label for="residentLookupCode">Código de registro</label><div class="lookup-row"><input id="residentLookupCode" required maxlength="30" placeholder="Ex.: RES-001"><button class="btn btn-primary" type="submit">Consultar</button></div></form><p class="form-hint">A busca exige correspondência exata do código.</p><div id="residentLookupResult" aria-live="polite"></div></div>
+                </div>
+            </section>
+
+            <!-- AGENDA -->
+            <section class="page" id="page-agenda">
+                <div class="page-heading">
+                    <div>
+                        <h2>Agenda institucional</h2>
+                        <p>Organize atividades, reuniões e compromissos.</p>
+                    </div>
+                    <button class="btn btn-primary" id="newEvent" data-admin-only>
+                        ＋ Novo compromisso
+                    </button>
+                </div>
+
+                <div class="card appointment-admin-card" data-admin-only><div class="section-header"><div><div class="card-title">Solicitações de agendamento</div><div class="card-subtitle">Aprove ou recuse pedidos enviados pelos usuários.</div></div></div><div id="appointmentRequests"></div></div>
+                <div class="agenda-grid">
+                    <div class="card">
+                        <div class="section-header">
+                            <div>
+                                <div class="card-title">Próximos compromissos</div>
+                                <div class="card-subtitle">
+                                    Eventos cadastrados no sistema
+                                </div>
+                            </div>
+                        </div>
+                        <div id="eventList"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Cadastrar compromisso</div>
+                        <p class="card-subtitle form-intro">
+                            Adicione uma atividade à agenda.
+                        </p>
+
+                        <form id="eventForm" data-admin-only>
+                            <div class="form-grid">
+                                <div class="form-group full">
+                                    <label for="eventName">Nome do compromisso</label>
+                                    <input id="eventName" required maxlength="100"
+                                           placeholder="Ex.: Reunião da equipe">
+                                </div>
+                                <div class="form-group">
+                                    <label for="eventDate">Data</label>
+                                    <input id="eventDate" type="date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="eventTime">Horário</label>
+                                    <input id="eventTime" type="time" required>
+                                </div>
+                                <div class="form-group full">
+                                    <label for="eventPlace">Local ou setor</label>
+                                    <input id="eventPlace" maxlength="100"
+                                           placeholder="Ex.: Sala de reuniões">
+                                </div>
+                                <div class="form-group full">
+                                    <label for="eventDescription">Descrição</label>
+                                    <textarea id="eventDescription" maxlength="500"
+                                              placeholder="Detalhes do compromisso"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-footer">
+                                <button class="btn btn-primary" type="submit">
+                                    Salvar compromisso
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AGENDAMENTO DO USUÁRIO -->
+            <section class="page" id="page-agendamento" data-user-only>
+                <div class="page-heading"><div><h2>Agendamento</h2><p>Solicite uma visita a um residente ou uma reunião com um funcionário.</p></div></div>
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-title">Nova solicitação</div>
+                        <p class="card-subtitle form-intro">A solicitação ficará pendente até a aprovação de um administrador.</p>
+                        <form id="appointmentForm">
+                            <div class="form-grid">
+                                <div class="form-group full"><label for="appointmentType">Tipo de agendamento</label><select id="appointmentType" required><option value="visita">Visita a residente</option><option value="reuniao">Reunião com funcionário</option></select></div>
+                                <div class="form-group full" id="appointmentResidentGroup"><label for="appointmentResidentCode">Código do residente</label><input id="appointmentResidentCode" maxlength="30" placeholder="Ex.: RES-001"></div>
+                                <div class="form-group full" id="appointmentRoleGroup" hidden><label for="appointmentStaffRole">Cargo do funcionário</label><select id="appointmentStaffRole"><option value="Enfermagem">Enfermagem</option><option value="Assistência social">Assistência social</option><option value="Coordenação">Coordenação</option><option value="Administração">Administração</option><option value="Psicologia">Psicologia</option><option value="Fisioterapia">Fisioterapia</option></select></div>
+                                <div class="form-group"><label for="appointmentDate">Data desejada</label><input id="appointmentDate" type="date" required></div>
+                                <div class="form-group"><label for="appointmentTime">Horário</label><input id="appointmentTime" type="time" required></div>
+                                <div class="form-group full"><label for="appointmentNote">Observação (opcional)</label><textarea id="appointmentNote" maxlength="500" placeholder="Informações adicionais"></textarea></div>
+                            </div>
+                            <div class="form-footer"><button class="btn btn-primary" type="submit">Enviar solicitação</button></div>
+                        </form>
+                    </div>
+                    <div class="card"><div class="card-title">Meus agendamentos</div><p class="card-subtitle">Acompanhe solicitações pendentes, aprovadas ou recusadas.</p><div id="myAppointments"></div></div>
+                </div>
+            </section>
+
+            <!-- NOTIFICAÇÕES -->
+            <section class="page" id="page-notificacoes">
+                <div class="page-heading">
+                    <div>
+                        <h2>Notificações</h2>
+                        <p>Acompanhe avisos e atualizações do sistema.</p>
+                    </div>
+                    <button class="btn btn-secondary" id="clearAllNotifications" data-user-only type="button" aria-label="Limpar todas as notificações">🗑 Limpar todas</button>
+                    <button class="btn btn-secondary" id="markAllRead" data-admin-only>
+                        ✓ Marcar todas como lidas
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="section-header">
+                        <div>
+                            <div class="card-title">Central de notificações</div>
+                            <div class="card-subtitle" id="notificationSubtitle"></div>
+                        </div>
+                        <select id="notificationFilter" class="filter-select">
+                            <option value="all">Todas</option>
+                            <option value="unread">Não lidas</option>
+                            <option value="read">Lidas</option>
+                        </select>
+                    </div>
+                    <div class="notice-list" id="notificationList"></div>
+                </div>
+            </section>
+
+            <!-- COMUNICADOS -->
+            <section class="page" id="page-comunicados">
+                <div class="page-heading">
+                    <div>
+                        <h2>Comunicados</h2>
+                        <p>Informações, orientações e avisos institucionais.</p>
+                    </div>
+                    <button class="btn btn-primary" id="newBulletin" data-admin-only>
+                        ＋ Novo comunicado
+                    </button>
+                </div>
+                <div class="bulletin-grid" id="bulletinGrid"></div>
+            </section>
+
+            <section class="page" id="page-contas" data-admin-only><div class="page-heading"><div><h2>Contas cadastradas</h2><p>Gerencie os usuários com acesso ao sistema.</p></div></div><div class="card"><div class="table-wrap"><table><thead><tr><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Cadastro</th><th>Ações</th></tr></thead><tbody id="accountsTable"></tbody></table></div><div id="accountsEmpty" class="empty-state" hidden>Nenhuma conta cadastrada.</div></div></section>
+
+            <!-- PERFIL -->
+            <section class="page" id="page-perfil">
+                <div class="page-heading">
+                    <div>
+                        <h2>Meu perfil</h2>
+                        <p>Visualize e altere seus dados cadastrais.</p>
+                    </div>
+                </div>
+
+                <div class="profile-layout">
+                    <div class="card profile-summary">
+                        <div class="profile-avatar" id="profileAvatar">AD</div>
+                        <h3 id="profileDisplayName">Administrador</h3>
+                        <p id="profileDisplayRole">Administrador</p>
+                        <hr>
+
+                        <div class="info-row">
+                            <small>E-mail cadastrado</small>
+                            <strong id="profileDisplayEmail"></strong>
+                        </div>
+                        <div class="info-row">
+                            <small>Telefone</small>
+                            <strong id="profileDisplayPhone"></strong>
+                        </div>
+                        <div class="info-row">
+                            <small>Tipo de conta</small>
+                            <strong>Conta demonstrativa</strong>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="section-header">
+                            <div>
+                                <div class="card-title">Dados cadastrais</div>
+                                <div class="card-subtitle">
+                                    Atualize suas informações pessoais.
+                                </div>
+                            </div>
+                        </div>
+
+                        <form id="profileForm">
+                            <div class="form-grid">
+                                <div class="form-group full">
+                                    <label for="profileName">Nome completo</label>
+                                    <input id="profileName" maxlength="100" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profileEmail">E-mail</label>
+                                    <input id="profileEmail" type="email"
+                                           maxlength="150" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profilePhone">Telefone</label>
+                                    <input id="profilePhone" type="tel" maxlength="25"
+                                           placeholder="(00) 00000-0000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profileRole">Cargo ou função</label>
+                                    <input id="profileRole" maxlength="80" readonly aria-readonly="true">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profileDepartment">Setor</label>
+                                    <select id="profileDepartment" disabled aria-disabled="true">
+                                        <option>Administrativo</option>
+                                        <option>Enfermagem</option>
+                                        <option>Assistência social</option>
+                                        <option>Coordenação</option>
+                                        <option>Recursos humanos</option>
+                                        <option>Outro</option>
+                                    </select>
+                                </div>
+                                <div class="form-group full">
+                                    <label for="profileAddress">Endereço</label>
+                                    <input id="profileAddress" maxlength="200"
+                                           placeholder="Rua, número, cidade e CEP">
+                                </div>
+                            </div>
+
+                            <p class="form-hint">
+                                Neste protótipo, os dados são salvos somente
+                                neste navegador.
+                            </p>
+
+                            <div class="form-footer">
+                                <button class="btn btn-secondary" type="button"
+                                        id="resetProfile">
+                                    Descartar alterações
+                                </button>
+                                <button class="btn btn-primary" type="submit">
+                                    Salvar alterações
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="page-footer">
+                Asilo João Kuhl Filho · Sistema de Gestão Institucional
+            </footer>
+        </div>
+    </main>
+</div>
+
+<!-- MODAL DE RESIDENTE -->
+<div class="modal" id="residentModal" role="dialog"
+     aria-modal="true" aria-labelledby="residentModalTitle">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="residentModalTitle">Cadastrar residente</h3>
+            <button class="close-button" data-close="residentModal"
+                    aria-label="Fechar">×</button>
+        </div>
+
+        <form id="residentForm">
+            <input type="hidden" id="residentEditId">
+            <div class="resident-modal-tabs"><button type="button" class="resident-modal-tab active" data-resident-tab="basic">Cadastro</button><button type="button" class="resident-modal-tab" data-resident-tab="personal">Informações pessoais</button></div>
+            <div class="form-grid resident-modal-panel" id="residentBasicFields">
+                <div class="form-group full"><label for="newResidentName">Nome completo</label><input id="newResidentName" required maxlength="100"></div>
+                <div class="form-group"><label for="newResidentDate">Data de entrada</label><input id="newResidentDate" type="date" required></div>
+                <div class="form-group"><label for="newResidentStatus">Status</label><select id="newResidentStatus"><option>Ativo</option><option>Em acompanhamento</option></select></div>
+            </div>
+            <div class="form-grid resident-modal-panel" id="residentPersonalFields" hidden>
+                <div class="form-group"><label for="residentCPF">CPF</label><input id="residentCPF" maxlength="14" placeholder="000.000.000-00"></div>
+                <div class="form-group"><label for="residentRG">RG</label><input id="residentRG" maxlength="25"></div>
+                <div class="form-group"><label for="residentAge">Idade</label><input id="residentAge" type="number" min="0" max="140"></div>
+                <div class="form-group"><label for="residentSex">Sexo</label><select id="residentSex"><option value="">Não informado</option><option>Feminino</option><option>Masculino</option><option>Outro</option><option>Não informado</option></select></div>
+                <div class="form-group full"><label for="residentBirthplace">Local de nascimento</label><input id="residentBirthplace" maxlength="120" placeholder="Cidade/Estado"></div>
+                <p class="form-hint full">Essas informações só podem ser consultadas e alteradas por administradores.</p>
+            </div>
+            <div class="form-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-close="residentModal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar registro</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL DE COMUNICADO -->
+<div class="modal" id="bulletinModal" role="dialog"
+     aria-modal="true" aria-labelledby="bulletinModalTitle">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="bulletinModalTitle">Novo comunicado</h3>
+            <button class="close-button" data-close="bulletinModal"
+                    aria-label="Fechar">×</button>
+        </div>
+
+        <form id="bulletinForm">
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label for="bulletinTitle">Título</label>
+                    <input id="bulletinTitle" required maxlength="120">
+                </div>
+                <div class="form-group">
+                    <label for="bulletinCategory">Categoria</label>
+                    <select id="bulletinCategory">
+                        <option>Institucional</option>
+                        <option>Equipe</option>
+                        <option>Evento</option>
+                        <option>Manutenção</option>
+                        <option>Importante</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="bulletinAudience">Público</label>
+                    <select id="bulletinAudience">
+                        <option>Todos os colaboradores</option>
+                        <option>Administrativo</option>
+                        <option>Equipe de assistência</option>
+                        <option>Coordenação</option>
+                    </select>
+                </div>
+                <div class="form-group full">
+                    <label for="bulletinContent">Conteúdo</label>
+                    <textarea id="bulletinContent" required maxlength="3000"
+                              placeholder="Escreva o comunicado..."></textarea>
+                </div>
+            </div>
+            <div class="form-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-close="bulletinModal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">
+                    Publicar comunicado
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+</body>
+</html>
